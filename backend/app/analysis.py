@@ -1,5 +1,6 @@
 import numpy as np
 import librosa
+from music21 import chord, roman
 
 CQT_HOP_LENGTH = 1024
 
@@ -185,3 +186,90 @@ def _merge_consecutive_same_chords(segments: list[ChordSegment]) -> list[ChordSe
         else:
             merged.append(seg)
     return merged
+
+
+MAJOR_SCALE_DEGREES = [0, 2, 4, 5, 7, 9, 11]
+MINOR_SCALE_DEGREES = [0, 2, 3, 5, 7, 8, 10]
+
+FUNCTION_LABELS: dict[int, str] = {
+    0: "I (T)",
+    1: "ii (S)",
+    2: "iii (TS)",
+    3: "IV (S)",
+    4: "V (D)",
+    5: "vi (TS)",
+    6: "vii°",
+}
+
+FUNCTION_LABELS_MINOR: dict[int, str] = {
+    0: "i (t)",
+    1: "ii°",
+    2: "bIII",
+    3: "iv (s)",
+    4: "V (D)",
+    5: "bVI",
+    6: "bVII",
+}
+
+
+def analyze_functions(
+    segments: list[ChordSegment], key: str
+) -> list[dict]:
+    """
+    Annotate chord segments with harmonic function labels based on detected key.
+    Returns list of dicts with start, end, chord, function.
+    """
+    results = []
+    for seg in segments:
+        func = _label_function(seg.chord, key)
+        results.append({
+            "start": seg.start,
+            "end": seg.end,
+            "chord": seg.chord,
+            "function": func,
+        })
+    return results
+
+
+def _label_function(chord_str: str, key: str) -> str:
+    """Label a single chord with its harmonic function in the given key."""
+    is_minor = "minor" in key.lower()
+    tonic = key.split()[0]  # "C major" → "C"
+
+    try:
+        ch = chord.Chord(chord_str)
+        root_midi = ch.root().midi % 12
+    except Exception:
+        return "?"
+
+    # Find scale position
+    scale_degrees = MINOR_SCALE_DEGREES if is_minor else MAJOR_SCALE_DEGREES
+    tonic_midi = _pitch_to_midi(tonic)
+    tonic_midi %= 12
+
+    root_in_scale = (root_midi - tonic_midi) % 12
+
+    try:
+        degree = scale_degrees.index(root_in_scale)
+    except ValueError:
+        degree = (root_in_scale - tonic_midi) % 12
+
+    labels = FUNCTION_LABELS_MINOR if is_minor else FUNCTION_LABELS
+    return labels.get(degree, f"{_degree_to_roman(degree)}?")
+
+
+def _pitch_to_midi(pitch: str) -> int:
+    """Convert pitch name to MIDI number (C4=60)."""
+    names = {"C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11}
+    base = pitch.rstrip("0123456789")
+    octave_str = pitch[len(base):]
+    midi = names.get(base, 0)
+    if octave_str:
+        midi += (int(octave_str) + 1) * 12
+    return midi
+
+
+def _degree_to_roman(degree: int) -> str:
+    """Convert scale degree to roman numeral string."""
+    numerals = ["I", "bII", "II", "bIII", "III", "IV", "bV", "V", "bVI", "VI", "bVII", "VII"]
+    return numerals[degree % 12]

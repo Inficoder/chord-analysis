@@ -1,5 +1,5 @@
 import numpy as np
-from app.analysis import detect_key, recognize_chords
+from app.analysis import detect_key, recognize_chords, ChordSegment, analyze_functions
 
 
 def test_detect_key_simple_major():
@@ -41,3 +41,30 @@ def test_recognize_chords_returns_events():
         assert hasattr(ev, "end")
         assert hasattr(ev, "chord")
         assert ev.start < ev.end
+
+
+def test_analyze_functions_in_c_major():
+    """I, IV, V in C major should be T, S, D."""
+    key = "C major"
+    chords = [
+        ChordSegment(start=0.0, end=1.0, chord="C"),
+        ChordSegment(start=1.0, end=2.0, chord="F"),
+        ChordSegment(start=2.0, end=3.0, chord="G"),
+    ]
+
+    result = analyze_functions(chords, key)
+
+    assert result[0]["function"] == "I (T)"
+    assert result[1]["function"] == "IV (S)"
+    assert result[2]["function"] == "V (D)"
+
+
+def test_analyze_functions_handles_unknown_chord():
+    key = "C major"
+    chords = [ChordSegment(start=0.0, end=1.0, chord="X")]
+
+    result = analyze_functions(chords, key)
+
+    assert len(result) == 1
+    assert result[0]["chord"] == "X"
+    assert result[0]["function"] != ""  # should produce something, not crash
