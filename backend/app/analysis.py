@@ -1,8 +1,5 @@
-from pathlib import Path
 import numpy as np
 import librosa
-
-from app.config import settings
 
 CQT_HOP_LENGTH = 1024
 
