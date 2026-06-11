@@ -1,5 +1,5 @@
 import numpy as np
-from app.analysis import detect_key
+from app.analysis import detect_key, recognize_chords
 
 
 def test_detect_key_simple_major():
@@ -25,3 +25,19 @@ def test_detect_key_returns_confidence_range():
     key, confidence = detect_key(audio, sr)
     assert 0.0 <= confidence <= 1.0
     assert isinstance(key, str)
+
+
+def test_recognize_chords_returns_events():
+    """Even with noise, should return a list of chord events."""
+    sr = 22050
+    audio = np.random.randn(sr * 3).astype(np.float32)
+
+    chords = recognize_chords(audio, sr)
+
+    assert isinstance(chords, list)
+    assert len(chords) > 0
+    for ev in chords:
+        assert hasattr(ev, "start")
+        assert hasattr(ev, "end")
+        assert hasattr(ev, "chord")
+        assert ev.start < ev.end
