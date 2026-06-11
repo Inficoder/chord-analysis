@@ -1,7 +1,5 @@
-import json
 from pathlib import Path
 from uuid import UUID
-import shutil
 
 from app.config import settings
 from app.models import AnalysisResult
@@ -40,7 +38,7 @@ def load_result(task_id: UUID) -> AnalysisResult | None:
 
 
 def cleanup(file_id: UUID) -> None:
-    """Remove uploaded file and associated results."""
+    """Remove uploaded file from disk."""
     upload = get_upload_path(file_id)
     if upload:
         upload.unlink(missing_ok=True)
