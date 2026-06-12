@@ -236,26 +236,56 @@ def _label_function(chord_str: str, key: str) -> str:
     is_minor = "minor" in key.lower()
     tonic = key.split()[0]  # "C major" → "C"
 
+    # Handle unrecognized / no-chord markers
+    if chord_str in ("N", "X", ""):
+        return chord_str if chord_str else "?"
+
     try:
-        ch = chord.Chord(chord_str)
+        ch = chord.Chord(_normalize_chord_name(chord_str))
         root_midi = ch.root().midi % 12
     except Exception:
-        return "?"
+        # Fallback: try to extract root from simple chord strings
+        try:
+            root_midi = _pitch_to_midi(chord_str) % 12
+        except Exception:
+            return chord_str  # return the chord name itself instead of "?"
 
     # Find scale position
     scale_degrees = MINOR_SCALE_DEGREES if is_minor else MAJOR_SCALE_DEGREES
-    tonic_midi = _pitch_to_midi(tonic)
-    tonic_midi %= 12
+    tonic_midi = _pitch_to_midi(tonic) % 12
 
     root_in_scale = (root_midi - tonic_midi) % 12
 
     try:
         degree = scale_degrees.index(root_in_scale)
     except ValueError:
-        degree = (root_in_scale - tonic_midi) % 12
+        degree = root_in_scale
 
     labels = FUNCTION_LABELS_MINOR if is_minor else FUNCTION_LABELS
-    return labels.get(degree, f"{_degree_to_roman(degree)}?")
+    return labels.get(degree, _degree_to_roman(degree))
+
+
+def _normalize_chord_name(name: str) -> str:
+    """Normalize chord name to a format music21 can parse."""
+    name = name.strip()
+    if not name:
+        return name
+    # "hdim7" → "m7b5" (half-diminished)
+    if "hdim7" in name:
+        name = name.replace("hdim7", "m7b5")
+    # "maj6" → "6", "min6" → "m6"
+    name = name.replace("maj6", "6")
+    name = name.replace("min6", "m6")
+    # "maj9" → "M9", "min9" → "m9"
+    name = name.replace("maj9", "M9")
+    name = name.replace("min9", "m9")
+    # "maj7" → "M7"
+    name = name.replace("maj7", "M7")
+    # "min7" → "m7"
+    name = name.replace("min7", "m7")
+    # "min" → "m" (but only if it's "min" not part of "dim")
+    name = name.replace("min", "m")
+    return name
 
 
 def _pitch_to_midi(pitch: str) -> int:
