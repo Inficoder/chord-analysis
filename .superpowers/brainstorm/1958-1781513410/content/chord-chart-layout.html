@@ -1,0 +1,121 @@
+<h2>和弦谱展示视图 — 布局方案</h2>
+<p class="subtitle">核心功能：歌词与上方和弦一对一居中对齐，和弦标签悬浮于对应音节之上</p>
+
+<div class="section">
+  <h3>方案 A — 等宽歌词，和弦居中</h3>
+  <p>适合等宽字体或每字等宽的中文场景。和弦标签严格居中对齐每个字/音节。</p>
+
+  <div class="mockup">
+    <div class="mockup-header">方案 A - 对齐视图</div>
+    <div class="mockup-body" style="font-family: monospace; padding: 24px; background: #1a1a2e; color: #eee; line-height: 2.4; font-size: 15px;">
+      <div style="margin-bottom: 8px;">
+        <span style="color: #f0c040; margin-right: 8px;">[C]&nbsp;&nbsp;</span>
+        <span style="color: #f0c040; margin-right: 8px;">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <span style="color: #f0c040; margin-right: 8px;">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <span style="color: #f0c040; margin-right: 8px;">[F]&nbsp;&nbsp;</span>
+        <span style="color: #f0c040; margin-right: 8px;">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+      </div>
+      <div style="margin-bottom: 16px;">
+        <span>一</span><span>闪</span><span>一</span><span>闪</span><span>亮</span><span>晶</span><span>晶</span>
+      </div>
+      <div style="margin-bottom: 8px;">
+        <span style="color: #f0c040; margin-right: 8px;">[F]&nbsp;&nbsp;</span>
+        <span style="color: #f0c040; margin-right: 8px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <span style="color: #f0c040; margin-right: 8px;">[C]&nbsp;&nbsp;</span>
+      </div>
+      <div style="margin-bottom: 16px;">
+        <span>满</span><span>天</span><span>都</span><span>是</span><span>小</span><span>星</span><span>星</span>
+      </div>
+      <div style="margin-bottom: 8px;">
+        <span style="color: #f0c040; margin-right: 8px;">[C]&nbsp;&nbsp;</span>
+        <span style="color: #f0c040; margin-right: 8px;">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <span style="color: #f0c040; margin-right: 8px;">[G]&nbsp;&nbsp;</span>
+        <span style="color: #f0c040; margin-right: 8px;">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+      </div>
+      <div style="margin-bottom: 16px;">
+        <span>挂</span><span>在</span><span>天</span><span>空</span><span>放</span><span>光</span><span>明</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>方案 B — 流式文本，和弦内嵌</h3>
+  <p>和弦标签直接嵌入歌词文本上方，使用 flex 或 grid 对齐。适合非等宽字体。更接近传统吉他谱/简谱的呈现方式。</p>
+
+  <div class="mockup">
+    <div class="mockup-header">方案 B - 流式视图</div>
+    <div class="mockup-body" style="padding: 24px; background: #1a1a2e; color: #eee; line-height: 2.2; font-size: 16px;">
+      <div style="display: flex; flex-direction: column; gap: 20px;">
+        <div>
+          <div style="display: flex; gap: 4px; margin-bottom: 2px;">
+            <span style="color: #f0c040; font-weight: bold;">C</span>
+            <span style="width: 28px;"></span>
+            <span style="width: 28px;"></span>
+            <span style="color: #f0c040; font-weight: bold;">F</span>
+          </div>
+          <div>一闪一闪亮晶晶</div>
+        </div>
+        <div>
+          <div style="display: flex; gap: 4px; margin-bottom: 2px;">
+            <span style="color: #f0c040; font-weight: bold;">F</span>
+            <span style="width: 28px;"></span>
+            <span style="color: #f0c040; font-weight: bold;">C</span>
+          </div>
+          <div>满天都是小星星</div>
+        </div>
+        <div>
+          <div style="display: flex; gap: 4px; margin-bottom: 2px;">
+            <span style="color: #f0c040; font-weight: bold;">C</span>
+            <span style="width: 28px;"></span>
+            <span style="color: #f0c040; font-weight: bold;">G</span>
+          </div>
+          <div>挂在天空放光明</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>方案 C — 和弦谱 + 时间轴侧栏</h3>
+  <p>在方案 B 基础上，左侧或上方增加滚动同步的时间轴，显示和弦进行与音频播放位置的对齐。适合边听边看的场景。</p>
+
+  <div class="mockup">
+    <div class="mockup-header">方案 C - 带时间轴</div>
+    <div class="mockup-body" style="display: flex; gap: 16px; padding: 24px; background: #1a1a2e;">
+      <div style="width: 48px; flex-shrink: 0; display: flex; flex-direction: column; gap: 20px; padding-top: 2px;">
+        <span style="color: #888; font-size: 11px; text-align: right;">0:00</span>
+        <span style="color: #888; font-size: 11px; text-align: right;">0:08</span>
+        <span style="color: #f0c040; font-size: 11px; text-align: right;">0:15</span>
+        <span style="color: #888; font-size: 11px; text-align: right;">0:22</span>
+      </div>
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 20px;">
+        <div>
+          <div style="display: flex; gap: 4px; margin-bottom: 2px;">
+            <span style="color: #f0c040; font-weight: bold;">C</span>
+            <span style="width: 20px;"></span>
+            <span style="color: #f0c040; font-weight: bold;">F</span>
+          </div>
+          <div style="color: #eee;">一闪一闪亮晶晶</div>
+        </div>
+        <div>
+          <div style="display: flex; gap: 4px; margin-bottom: 2px;">
+            <span style="color: #f0c040; font-weight: bold;">F</span>
+            <span style="width: 20px;"></span>
+            <span style="color: #f0c040; font-weight: bold;">C</span>
+          </div>
+          <div style="color: #eee;">满天都是小星星</div>
+        </div>
+        <div>
+          <div style="display: flex; gap: 4px; margin-bottom: 2px;">
+            <span style="color: #f0c040; font-weight: bold;">C</span>
+            <span style="width: 20px;"></span>
+            <span style="color: #f0c040; font-weight: bold;">G</span>
+          </div>
+          <div style="color: #eee;">挂在天空放光明</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
